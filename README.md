@@ -3,6 +3,10 @@
 ## Build Setup
 
 ```bash
+
+#Yoman https://yeoman.io/
+$ Yeoman으로 Express 서버코드 생성
+
 # 실행 전 node_modules 다운
 $ npm install
 
