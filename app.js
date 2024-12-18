@@ -8,7 +8,7 @@ const bodyParser = require("body-parser");
 
 const cors = require("cors");
 const routes = require("./routes/index");
-const users = require("./routes/user");
+const users = require("./routes/review");
 const config = require("./config/config.json");
 
 const app = express();
