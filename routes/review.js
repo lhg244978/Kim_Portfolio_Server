@@ -76,20 +76,43 @@ const coupang_run = (productId, page) => {
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
       };
-
+      var option_next = {
+        uri: `https://m.coupang.com/vm/products/${productId}/brand-sdp/reviews/list?page=${
+          parseInt(page) + 1
+        }&slotSize=10&reviewOnly=true`,
+        method: "get",
+        responseType: "arraybuffer",
+        headers: {
+          "User-Agent": "PostmanRuntime/7.43.0",
+          "Accept-Encoding": "gzip, deflate, br",
+          Connection: "keep-alive",
+          "Content-Type": "application/json; charset=json",
+          Accept: "*/*",
+          "Content-Encoding": "gzip",
+          Cookie: `MARKETID=${cookie_num}; PCID=${cookie_num}`,
+        },
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+      };
       var coupang_data = await axios_get(option);
+      var next_review = await axios_get(option_next);
+      var next = false;
       // 리뷰존재확인
       var coupang_data_productId = coupang_data.productId;
-      console.log(coupang_data_productId);
 
+      // nextReview
+      var coupang_data_next_productId = next_review.productId;
+
+      if (next_review && coupang_data_next_productId) {
+        next = true;
+      }
       if (coupang_data && coupang_data_productId) {
         var review_data = coupang_data.reviews;
         var data = [];
 
         if (review_data && review_data.length) {
-          var imgs = [];
-
           for (var idx in review_data) {
+            var imgs = [];
             if (review_data[idx].attachments) {
               if (review_data[idx].attachments.length) {
                 for (var idx2 in review_data[idx].attachments) {
@@ -108,10 +131,16 @@ const coupang_run = (productId, page) => {
               title: review_data[idx].title,
               content: review_data[idx].content,
               reviewAt: review_data[idx].reviewAt,
+              ratingAverage: review_data[idx].ratingAverage,
+              itemName: review_data[idx].itemName,
               imgs: imgs,
             });
           }
-          resolve(data);
+          const request_data = {
+            data: data,
+            next: next,
+          };
+          resolve(request_data);
         } else {
           resolve([]);
         }
@@ -126,10 +155,10 @@ const coupang_run = (productId, page) => {
 
 /* GET */
 router.get("/", async (req, res) => {
-  // var url = req.query.url;
+  var url = req.query.url;
 
-  var url =
-    "https://www.coupang.com/vp/products/7488062594?itemId=19575057319&vendorItemId=86682748504&sourceType=cmgoms&omsPageId=134943&omsPageUrl=134943&isAddedCart=";
+  // var url =
+  //   "https://www.coupang.com/vp/products/7488062594?itemId=19575057319&vendorItemId=86682748504&sourceType=cmgoms&omsPageId=134943&omsPageUrl=134943&isAddedCart=";
   var page = req.query.page ? req.query.page : 1;
   var type = "";
 
@@ -142,7 +171,7 @@ router.get("/", async (req, res) => {
   }
 
   if (type == "other") {
-    res.status(404).json({ msg: "페이지를 찾을 수 없습니다." });
+    res.status(400).json({ msg: "페이지를 찾을 수 없습니다." });
   } else {
     if (type == "coupang") {
       var productId = "";
@@ -162,10 +191,10 @@ router.get("/", async (req, res) => {
 
         res.status(200).json(data);
       } else {
-        res.status(200).json({ msg: "상품이 존재하지 않습니다." });
+        res.status(400).json({ msg: "상품이 존재하지 않습니다." });
       }
     } else {
-      res.status(200).json({ msg: "쿠팡만 가능합니다." });
+      res.status(400).json({ msg: "쿠팡만 가능합니다." });
     }
   }
 });
