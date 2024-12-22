@@ -65,9 +65,9 @@ const coupang_run = (productId, page) => {
       var jar = request.jar();
       var cookie_string = `MARKETID=${cookie_num}; PCID=${cookie_num}`;
       var cookie = tough.Cookie.parse(cookie_string);
-      jar.setCookie(cookie.toString(), "http://m.coupang.com"); // 특정 도메인에 쿠키 설정
+      jar.setCookie(cookie.toString(), "https://m.coupang.com"); // 특정 도메인에 쿠키 설정
       var option = {
-        uri: `http://m.coupang.com/vm/products/${productId}/brand-sdp/reviews/list?page=${page}&slotSize=10&reviewOnly=true`,
+        uri: `https://m.coupang.com/vm/products/${productId}/brand-sdp/reviews/list?page=${page}&slotSize=10&reviewOnly=true`,
         method: "get",
         responseType: "arraybuffer",
         headers: {
@@ -84,7 +84,7 @@ const coupang_run = (productId, page) => {
         httpsAgent: agent,
       };
       var option_next = {
-        uri: `http://m.coupang.com/vm/products/${productId}/brand-sdp/reviews/list?page=${
+        uri: `https://m.coupang.com/vm/products/${productId}/brand-sdp/reviews/list?page=${
           parseInt(page) + 1
         }&slotSize=10&reviewOnly=true`,
         method: "get",
@@ -166,7 +166,7 @@ router.get("/", async (req, res) => {
   var url = req.query.url;
 
   // var url =
-  //   "http://www.coupang.com/vp/products/7488062594?itemId=19575057319&vendorItemId=86682748504&sourceType=cmgoms&omsPageId=134943&omsPageUrl=134943&isAddedCart=";
+  //   "https://www.coupang.com/vp/products/7488062594?itemId=19575057319&vendorItemId=86682748504&sourceType=cmgoms&omsPageId=134943&omsPageUrl=134943&isAddedCart=";
   var page = req.query.page ? req.query.page : 1;
   var type = "";
 
