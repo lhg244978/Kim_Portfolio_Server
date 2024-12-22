@@ -75,8 +75,6 @@ const coupang_run = (productId, page) => {
         uri: `https://www.coupang.com/vm/products/${productId}/brand-sdp/reviews/list?page=${
           parseInt(page) + 1
         }&slotSize=10&reviewOnly=true`,
-        method: "get",
-        responseType: "arraybuffer",
         headers: {
           "User-Agent": "PostmanRuntime/7.43.0",
           "Accept-Encoding": "gzip",
