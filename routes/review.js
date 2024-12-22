@@ -6,8 +6,6 @@ const iconv = require("iconv-lite");
 const axios = require("axios");
 const https = require("https");
 
-
-
 // 비동기처리 get axios
 const axios_get = (options) => {
   return new Promise(async (resolve) => {
@@ -15,14 +13,7 @@ const axios_get = (options) => {
       .get(options.uri, options)
       .then((response) => {
         if (response.data) {
-          var buffer = Buffer.from(response.data);
-
-          // Buffer를 UTF-8로 디코딩
-          var decodedString = buffer.toString("utf-8");
-
-          // 디코딩된 문자열을 JSON으로 파싱
-          var jsonData = JSON.parse(decodedString);
-          resolve(jsonData);
+          resolve(response.data);
         } else {
           resolve();
         }
@@ -47,6 +38,14 @@ const request_post = (options) => {
 const coupang_run = (productId, page) => {
   return new Promise(async (resolve, reject) => {
     if (productId) {
+      // 랜덤 40글자
+      const chars =
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      var sid = "";
+      for (let i = 0; i <= 40; i++) {
+        sid += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+
       // 유닉스 타임스탬프
       var currentTimestamp = Date.now();
       var randomNumber = 0;
@@ -59,29 +58,25 @@ const coupang_run = (productId, page) => {
       }
       var cookie_num = randomNumber;
 
-      var jar = request.jar();
-      var cookie_string = `MARKETID=${cookie_num}; PCID=${cookie_num}`;
-      var cookie = tough.Cookie.parse(cookie_string);
-      jar.setCookie(cookie.toString(), "https://m.coupang.com"); // 특정 도메인에 쿠키 설정
       var option = {
-        uri: `https://m.coupang.com/vm/products/${productId}/brand-sdp/reviews/list?page=${page}&slotSize=10&reviewOnly=true`,
-        method: "get",
-        responseType: "arraybuffer",
+        uri: `https://www.coupang.com/vm/products/${productId}/brand-sdp/reviews/list?page=${
+          parseInt(page) + 1
+        }&slotSize=10&reviewOnly=true`,
         headers: {
           "User-Agent": "PostmanRuntime/7.43.0",
-          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Encoding": "gzip",
           Connection: "keep-alive",
-          "Content-Type": "application/json; charset=json",
           Accept: "*/*",
+          "Access-control-allow-credentials": "true",
+          "Content-Type": "application/json; charset=json",
           "Content-Encoding": "gzip",
-          Cookie: `MARKETID=${cookie_num}; PCID=${cookie_num}`,
+          Cookie: `sid=${sid}; MARKETID=${cookie_num}; PCID=${cookie_num}`,
         },
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
- 
       };
       var option_next = {
-        uri: `https://m.coupang.com/vm/products/${productId}/brand-sdp/reviews/list?page=${
+        uri: `https://www.coupang.com/vm/products/${productId}/brand-sdp/reviews/list?page=${
           parseInt(page) + 1
         }&slotSize=10&reviewOnly=true`,
         method: "get",
@@ -93,12 +88,10 @@ const coupang_run = (productId, page) => {
           "Content-Type": "application/json; charset=json",
           Accept: "*/*",
           "Content-Encoding": "gzip",
-          Cookie: `MARKETID=${cookie_num}; PCID=${cookie_num}`,
+          Cookie: `sid=${sid}; MARKETID=${cookie_num}; PCID=${cookie_num}`,
         },
-        maxContentLength: Infinity,
-        maxBodyLength: Infinity,
-
       };
+
       var coupang_data = await axios_get(option);
       var next_review = await axios_get(option_next);
       var next = false;
