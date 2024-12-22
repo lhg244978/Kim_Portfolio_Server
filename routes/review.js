@@ -6,10 +6,7 @@ const iconv = require("iconv-lite");
 const axios = require("axios");
 const https = require("https");
 
-// HTTPS 인증 무시
-const agent = new https.Agent({
-  rejectUnauthorized: false, // 인증서 검증을 무시
-});
+
 
 // 비동기처리 get axios
 const axios_get = (options) => {
@@ -81,7 +78,7 @@ const coupang_run = (productId, page) => {
         },
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
-        httpsAgent: agent,
+ 
       };
       var option_next = {
         uri: `https://m.coupang.com/vm/products/${productId}/brand-sdp/reviews/list?page=${
@@ -100,7 +97,7 @@ const coupang_run = (productId, page) => {
         },
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
-        httpsAgent: agent,
+
       };
       var coupang_data = await axios_get(option);
       var next_review = await axios_get(option_next);
