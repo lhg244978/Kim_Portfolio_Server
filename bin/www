@@ -6,8 +6,8 @@ const https = require("https");
 
 if (config.SSL) {
   const options = {
-    key: fs.readFileSync("/etc/letsencrypt/live/www.kimp.my/privkey.pem"),
-    cert: fs.readFileSync("/etc/letsencrypt/live/www.kimp.my/fullchain.pem"),
+    key: fs.readFileSync("/home/ubuntu/project/certificates/privkey.pem"),
+    cert: fs.readFileSync("/home/ubuntu/project/certificates/fullchain.pem"),
   };
 
   app.set("port_ssl", process.env.PORT_SSL || config.port);
