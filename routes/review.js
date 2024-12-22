@@ -39,8 +39,7 @@ const coupang_run = (productId, page) => {
   return new Promise(async (resolve, reject) => {
     if (productId) {
       // 랜덤 40글자
-      const chars =
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
       var sid = "";
       for (let i = 0; i <= 40; i++) {
         sid += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -63,14 +62,11 @@ const coupang_run = (productId, page) => {
           parseInt(page) + 1
         }&slotSize=10&reviewOnly=true`,
         headers: {
-          "User-Agent": "PostmanRuntime/7.43.0",
-          "Accept-Encoding": "gzip",
-          Connection: "keep-alive",
-          Accept: "*/*",
-          "Access-control-allow-credentials": "true",
-          "Content-Type": "application/json; charset=json",
-          "Content-Encoding": "gzip",
-          Cookie: `sid=${sid}; MARKETID=${cookie_num}; PCID=${cookie_num}`,
+      "User-Agent": "PostmanRuntime/7.43.0",
+      "Accept-Encoding": "gzip",
+      Connection: "keep-alive",
+      Accept: "*/*",
+      Cookie: `sid=${sid}; MARKETID=${cookie_num}; PCID=${cookie_num}`,
         },
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
@@ -83,11 +79,9 @@ const coupang_run = (productId, page) => {
         responseType: "arraybuffer",
         headers: {
           "User-Agent": "PostmanRuntime/7.43.0",
-          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Encoding": "gzip",
           Connection: "keep-alive",
-          "Content-Type": "application/json; charset=json",
           Accept: "*/*",
-          "Content-Encoding": "gzip",
           Cookie: `sid=${sid}; MARKETID=${cookie_num}; PCID=${cookie_num}`,
         },
       };
