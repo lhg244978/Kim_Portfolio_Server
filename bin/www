@@ -1,8 +1,23 @@
 #!/usr/bin/env node
 var app = require("../app");
 const config = require("../config/config.json");
-app.set("port", process.env.PORT || config.port);
+const fs = require("fs");
+const https = require("https");
 
-var server = app.listen(app.get("port"), function () {
-  console.log("Express server listening on port " + server.address().port);
-});
+if (config.SSL) {
+  const options = {
+    key: fs.readFileSync("/etc/letsencrypt/live/www.kimp.my/privkey.pem"),
+    cert: fs.readFileSync("/etc/letsencrypt/live/www.kimp.my/fullchain.pem"),
+  };
+
+  app.set("port_ssl", process.env.PORT_SSL || config.port);
+
+  https.createServer(options, app).listen(app.get("port_ssl"), function () {
+    console.log("HTTPS server listening on port " + app.get("port_ssl"));
+  });
+} else {
+  app.set("port", process.env.PORT || config.port);
+  var server = app.listen(app.get("port"), function () {
+    console.log("HTTP server listening on port " + server.address().port);
+  });
+}
