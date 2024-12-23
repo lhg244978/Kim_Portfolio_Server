@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const request = require("request");
-const tough = require("tough-cookie");
-const iconv = require("iconv-lite");
 const axios = require("axios");
-const https = require("https");
+const XLSX = require("xlsx");
+const fs = require("fs");
+const path = require("path");
 
 // 비동기처리 get axios
 const axios_get = (options) => {
@@ -22,6 +22,33 @@ const axios_get = (options) => {
         console.error(err);
         resolve({});
       });
+  });
+};
+
+// 비동기 처리 엑셀
+
+// 비동기처리 xlsx
+const createXlsx = (jsondata, filename) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      var workbook = XLSX.utils.book_new();
+
+      var worksheet = XLSX.utils.json_to_sheet(jsondata);
+
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+      var filePath = path.join(__dirname, filename);
+      // 워크북을 메모리에 생성
+      var fileBuffer = XLSX.write(workbook, {
+        type: "buffer",
+        bookType: "xlsx",
+      });
+
+      resolve(fileBuffer);
+    } catch (error) {
+      console.log(error);
+      resolve(null);
+    }
   });
 };
 // 비동기처리 post request
@@ -79,17 +106,18 @@ const coupang_run = (productId, page) => {
         uri: `https://www.coupang.com/vm/products/${productId}/brand-sdp/reviews/list?page=${
           parseInt(page) + 1
         }&slotSize=10&reviewOnly=true`,
-        method: "get",
-        responseType: "arraybuffer",
         headers: {
           "User-Agent": "PostmanRuntime/7.43.0",
-          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Encoding": "gzip",
           Connection: "keep-alive",
-          "Content-Type": "application/json; charset=json",
           Accept: "*/*",
+          "Access-control-allow-credentials": "true",
+          "Content-Type": "application/json; charset=json",
           "Content-Encoding": "gzip",
           Cookie: `sid=${sid}; MARKETID=${cookie_num}; PCID=${cookie_num}`,
         },
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
       };
 
       var coupang_data = await axios_get(option);
@@ -194,6 +222,35 @@ router.get("/", async (req, res) => {
     } else {
       res.status(400).json({ msg: "쿠팡만 가능합니다." });
     }
+  }
+});
+
+/* GET */
+router.post("/xlsx", async (req, res) => {
+  var jsondata = req.body.jsondata;
+  var filename = req.body.filename ? req.body.filename + ".xlsx" : "xlsx.xlsx";
+  if (jsondata.length) {
+    for (var idx in jsondata) {
+      if (jsondata[idx].imgs.length) {
+        jsondata[idx].imgs = JSON.stringify(jsondata[idx].imgs);
+      } else {
+        jsondata[idx].imgs = "";
+      }
+    }
+    var fileBuffer = await createXlsx(jsondata, filename);
+
+    if (fileBuffer) {
+      // 응답 헤더 설정
+      // Buffer를 Base64로 변환
+      var base64Data = fileBuffer.toString("base64");
+
+      // 파일 데이터 전송
+      res.status(200).json(base64Data);
+    } else {
+      res.status(400).json({ msg: "올바르지 않은 실행입니다." });
+    }
+  } else {
+    res.status(400).json({ msg: "리뷰가 없습니다." });
   }
 });
 

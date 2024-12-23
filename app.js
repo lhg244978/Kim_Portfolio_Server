@@ -14,15 +14,15 @@ const config = require("./config/config.json");
 const app = express();
 
 // 모두허용
-app.use(cors());
+// app.use(cors());
 
-// 특정 도메인 허용
-// let corsOptions = {
-//     origin: 'http://localhost:3000',
-//     credentials: true
-// }
+//특정 도메인 허용
+let corsOptions = {
+  origin: "https://www.kimp.my",
+  credentials: true,
+};
 
-// app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
 const env = process.env.NODE_ENV || "development";
 app.locals.ENV = env;
