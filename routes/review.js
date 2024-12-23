@@ -66,8 +66,7 @@ const coupang_run = (productId, page) => {
   return new Promise(async (resolve, reject) => {
     if (productId) {
       // 랜덤 40글자
-      const chars =
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
       var sid = "";
       for (let i = 0; i <= 40; i++) {
         sid += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -94,9 +93,6 @@ const coupang_run = (productId, page) => {
           "Accept-Encoding": "gzip",
           Connection: "keep-alive",
           Accept: "*/*",
-          "Access-control-allow-credentials": "true",
-          "Content-Type": "application/json; charset=json",
-          "Content-Encoding": "gzip",
           Cookie: `sid=${sid}; MARKETID=${cookie_num}; PCID=${cookie_num}`,
         },
         maxContentLength: Infinity,
@@ -111,13 +107,8 @@ const coupang_run = (productId, page) => {
           "Accept-Encoding": "gzip",
           Connection: "keep-alive",
           Accept: "*/*",
-          "Access-control-allow-credentials": "true",
-          "Content-Type": "application/json; charset=json",
-          "Content-Encoding": "gzip",
           Cookie: `sid=${sid}; MARKETID=${cookie_num}; PCID=${cookie_num}`,
         },
-        maxContentLength: Infinity,
-        maxBodyLength: Infinity,
       };
 
       var coupang_data = await axios_get(option);
