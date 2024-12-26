@@ -18,7 +18,7 @@ const app = express();
 
 //특정 도메인 허용
 let corsOptions = {
-  origin: "https://www.kimp.my",
+  origin: config.url,
   credentials: true,
 };
 
