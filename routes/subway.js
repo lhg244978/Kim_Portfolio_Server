@@ -88,9 +88,9 @@ router.post("/info", async (req, res) => {
         line
       )}`,
     };
-    //var traininfo = await axios_get(option);
+    var traininfo = await axios_get(option);
     // 데이터 용량초과시
-    var traininfo = subway_json;
+    // var traininfo = subway_json;
 
     var realtimePosition = [];
     // 500 에러시 errorMessage가 생기지 않기 때문에 통일
@@ -129,7 +129,7 @@ router.post("/info", async (req, res) => {
                 if (uniqueTrainData[idx2].updnLine == 0) {
                   if (uniqueTrainData[idx2].trainSttus == 0) {
                     if (!detailData[idx].donwlinedata) {
-                      detailData[idx - 1].donwlinedata = uniqueTrainData[idx2];
+                      detailData[idx].donwlinedata = uniqueTrainData[idx2];
                     }
                   } else {
                     if (!detailData[idx].downdata) {
