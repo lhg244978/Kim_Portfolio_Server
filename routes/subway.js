@@ -71,6 +71,7 @@ router.get("/station", async (req, res) => {
 router.post("/info", async (req, res) => {
   var line = req.body.line ? req.body.line : "";
   var detailData = req.body.detailData ? req.body.detailData : [];
+  var updnLine = req.body.updnLine ? req.body.updnLine : 0;
   var excepton = false;
   var msg = "";
 
@@ -126,27 +127,29 @@ router.post("/info", async (req, res) => {
               uniqueTrainData[idx2].tooltipValue = false;
               if (detailData[idx].code == uniqueTrainData[idx2].statnId) {
                 // updnLine == 0 상행 updnLine == 1 하행 분류 후 실시간 데이터 삽입
-                if (uniqueTrainData[idx2].updnLine == 0) {
-                  if (uniqueTrainData[idx2].trainSttus == 0) {
-                    if (!detailData[idx].donwlinedata) {
-                      detailData[idx].donwlinedata = uniqueTrainData[idx2];
+                if (uniqueTrainData[idx2].updnLine == updnLine) {
+                  if (uniqueTrainData[idx2].updnLine == 0) {
+                    if (uniqueTrainData[idx2].trainSttus == 0) {
+                      if (!detailData[idx].donwlinedata) {
+                        detailData[idx].donwlinedata = uniqueTrainData[idx2];
+                      }
+                    } else {
+                      if (!detailData[idx].downdata) {
+                        detailData[idx].downdata = uniqueTrainData[idx2];
+                      }
                     }
                   } else {
-                    if (!detailData[idx].downdata) {
-                      detailData[idx].downdata = uniqueTrainData[idx2];
-                    }
-                  }
-                } else {
-                  if (uniqueTrainData[idx2].trainSttus == 0) {
-                    if (
-                      detailData[idx - 1] &&
-                      !detailData[idx - 1].uplinedata
-                    ) {
-                      detailData[idx - 1].uplinedata = uniqueTrainData[idx2];
-                    }
-                  } else {
-                    if (!detailData[idx].updata) {
-                      detailData[idx].updata = uniqueTrainData[idx2];
+                    if (uniqueTrainData[idx2].trainSttus == 0) {
+                      if (
+                        detailData[idx - 1] &&
+                        !detailData[idx - 1].uplinedata
+                      ) {
+                        detailData[idx - 1].uplinedata = uniqueTrainData[idx2];
+                      }
+                    } else {
+                      if (!detailData[idx].updata) {
+                        detailData[idx].updata = uniqueTrainData[idx2];
+                      }
                     }
                   }
                 }
