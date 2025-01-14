@@ -75,6 +75,10 @@ router.post("/info", async (req, res) => {
   var excepton = false;
   var msg = "";
 
+  if (line.line) {
+    line = line.line;
+  }
+
   if (!line) {
     excepton = true;
     msg = "호선이 없습니다.";
