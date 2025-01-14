@@ -5,6 +5,16 @@ const { query } = require("../mods/dbconnection");
 const seoulApiKey = require("../config/config.json").seoulApiKey;
 const subway_json = require("../data/subway_json.json");
 const axios = require("axios");
+const linecode = {
+  "1호선": 1001,
+  "2호선": 1002,
+  "3호선": 1003,
+  "4호선": 1004,
+  "5호선": 1005,
+  "6호선": 1006,
+  "7호선": 1007,
+  "8호선": 1008,
+};
 
 // 비동기처리 get axios
 const axios_get = (options) => {
@@ -157,6 +167,76 @@ router.post("/info", async (req, res) => {
                     }
                   }
                 }
+              }
+            }
+          }
+          res.status(200).json(detailData);
+        } else {
+          res.status(200).json(detailData);
+        }
+      } else {
+        res.status(200).json(detailData);
+      }
+    } else {
+      res.status(400).json({ msg: traininfo.message });
+    }
+  } else {
+    res.status(400).json({ msg });
+  }
+});
+
+router.post("/detailStation", async (req, res) => {
+  var station = req.body.station ? req.body.station : "";
+  var line = req.body.line ? req.body.line : "";
+  var excepton = false;
+  var msg = "";
+
+  if (line.line) {
+    line = line.line;
+  }
+
+  if (!line) {
+    excepton = true;
+    msg = "호선이 없습니다.";
+  }
+  if (!station) {
+    excepton = true;
+    msg = "역명을 찾을 수 없습니다.";
+  }
+
+  var code = linecode[line];
+  var detailData = {
+    up: [],
+    down: [],
+  };
+
+  if (!excepton) {
+    var option = {
+      uri: `http://swopenapi.seoul.go.kr/api/subway/${seoulApiKey}/json/realtimeStationArrival/0/150/${encodeURIComponent(
+        station
+      )}`,
+    };
+    var traininfo = await axios_get(option);
+    // 데이터 용량초과시
+    // var traininfo = subway_json;
+
+    // 500 에러시 errorMessage가 생기지 않기 때문에 통일
+    if (traininfo.errorMessage) {
+      traininfo.status = traininfo.errorMessage.status;
+      traininfo.message = traininfo.errorMessage.message;
+    }
+    if (traininfo.status == 200) {
+      if (traininfo.realtimeArrivalList) {
+        if (traininfo.realtimeArrivalList.length) {
+          for (var idx in traininfo.realtimeArrivalList) {
+            if (traininfo.realtimeArrivalList[idx].subwayId == code) {
+              if (
+                traininfo.realtimeArrivalList[idx].updnLine ==
+                (code != 1002 ? "상행" : "내선")
+              ) {
+                detailData.up.push(traininfo.realtimeArrivalList[idx]);
+              } else {
+                detailData.down.push(traininfo.realtimeArrivalList[idx]);
               }
             }
           }
