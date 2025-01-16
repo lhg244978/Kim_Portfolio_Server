@@ -50,8 +50,8 @@ const crawling = (data, region) => {
 
     const todayElements = document.querySelectorAll("._today"); // 모든 요소 선택
     const weekElements = document.querySelectorAll(".week_item"); // 모든 요소 선택
-    await query("DELETE FROM tb_weader_today WHERE region = ?", [region]);
-    await query("DELETE FROM tb_weader_week WHERE region = ?", [region]);
+    await query("DELETE FROM tb_weather_today WHERE region = ?", [region]);
+    await query("DELETE FROM tb_weather_week WHERE region = ?", [region]);
     // 현재
     await todayElements.forEach(async (element, index) => {
       // 필요부분만 작업
@@ -101,7 +101,7 @@ const crawling = (data, region) => {
         uptdate: moment().format("YYYY-MM-DD HH:mm:ss"),
       };
 
-      await query("INSERT INTO tb_weader_today SET ?", [todayWeatherData]);
+      await query("INSERT INTO tb_weather_today SET ?", [todayWeatherData]);
     });
 
     // 일주일
@@ -140,13 +140,13 @@ const crawling = (data, region) => {
             .trim() || null, // 3
         uptdate: moment().format("YYYY-MM-DD HH:mm:ss"),
       };
-      await query("INSERT INTO tb_weader_week SET ?", [weatherData]);
+      await query("INSERT INTO tb_weather_week SET ?", [weatherData]);
     });
     resolve();
   });
 };
 
-const update_weader = async () => {
+const update_weather = async () => {
   if (!run) {
     run = true;
     console.log("RUNTIME :" + moment().format("YYYY-MM-DD HH:mm:ss"));
@@ -166,7 +166,7 @@ const update_weader = async () => {
   }
 };
 
-update_weader();
+update_weather();
 setInterval(() => {
-  update_weader();
+  update_weather();
 }, 3600000);

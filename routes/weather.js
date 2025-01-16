@@ -16,16 +16,16 @@ router.get("/", async (req, res) => {
     msg = "지역을 선택해주세요.";
   }
   if (!excepton) {
-    var today_weader = await query(
-      "SELECT * FROM tb_weader_today WHERE region = ?;",
+    var today_weather = await query(
+      "SELECT * FROM tb_weather_today WHERE region = ?;",
       [region]
     );
-    var week_weader = await query(
-      "SELECT * FROM tb_weader_week WHERE region = ? ORDER BY date ASC;",
+    var week_weather = await query(
+      "SELECT * FROM tb_weather_week WHERE region = ? ORDER BY date ASC;",
       [region]
     );
 
-    res.json({ today_weader, week_weader });
+    res.json({ today_weather, week_weather });
   } else {
     res.status(400).json({ msg });
   }
