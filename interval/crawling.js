@@ -61,12 +61,13 @@ const crawling = (data, region) => {
       $("dl.summary_list .sort dt.term").each(function () {
         const direction = $(this).text().trim();
         if (direction) {
-          windDirection.push(direction); // 바람 방향 텍스트를 배열에 저장
+          windDirection.push(direction); // 3번째 배열에 있는 바람정보가져옴
         }
       });
       // 클래스 이름 고정
       var todayWeatherData = {
         region,
+        status: $("div.weather_main span.blind").text().trim(),
         temperature: parseFloat(
           $("div.temperature_text strong")
             .text()
@@ -87,7 +88,7 @@ const crawling = (data, region) => {
             .trim(),
           10
         ),
-        wind_direction: windDirection.length == 1 ? windDirection[0] : "-", // 모든 바람 방향 배열로 저장
+        wind_direction: windDirection.length == 3 ? windDirection[2] : "-",
         wind_speed: parseFloat(
           $("dl.summary_list .sort dd.desc")
             .first()
