@@ -64,6 +64,14 @@ const crawling = (data, region) => {
           windDirection.push(direction); // 3번째 배열에 있는 바람정보가져옴
         }
       });
+      const windSpeeds = [];
+      $("dl.summary_list .sort dd.desc").each(function () {
+        const speed = $(this).text().trim();
+
+        if (speed) {
+          windSpeeds.push(speed); // 3번째 배열에 있는 바람정보가져옴
+        }
+      });
       // 클래스 이름 고정
       var todayWeatherData = {
         region,
@@ -89,17 +97,13 @@ const crawling = (data, region) => {
           10
         ),
         wind_direction: windDirection.length == 3 ? windDirection[2] : "-",
-        wind_speed: parseFloat(
-          $("dl.summary_list .sort dd.desc")
-            .first()
-            .text()
-            .replace("m/s", "")
-            .trim()
-        ),
+        wind_speed:
+          windSpeeds.length == 3 ? windSpeeds[2].replace("m/s", "") : "-",
+
         yesterdayDifference: $("p.summary .temperature.down").text().trim()
           ? $("p.summary .temperature.down").text().trim()
           : $("p.summary .temperature.up").text().trim(),
-        uptdate: moment().format("YYYY-MM-DD HH:mm:ss"),
+        uptdate: moment().add(9, "hours").format("YYYY-MM-DD HH:mm:ss"),
       };
 
       await query("INSERT INTO tb_weather_today SET ?", [todayWeatherData]);
@@ -139,7 +143,7 @@ const crawling = (data, region) => {
             .text()
             .replace(/[^\-0-9]/g, "")
             .trim() || null, // 3
-        uptdate: moment().format("YYYY-MM-DD HH:mm:ss"),
+        uptdate: moment().add(9, "hours").format("YYYY-MM-DD HH:mm:ss"),
       };
       await query("INSERT INTO tb_weather_week SET ?", [weatherData]);
     });
@@ -150,7 +154,9 @@ const crawling = (data, region) => {
 const update_weather = async () => {
   if (!run) {
     run = true;
-    console.log("RUNTIME :" + moment().format("YYYY-MM-DD HH:mm:ss"));
+    console.log(
+      "RUNTIME :" + moment().add(9, "hours").format("YYYY-MM-DD HH:mm:ss")
+    );
 
     for (var idx in regions) {
       var region = regions[idx];
@@ -162,7 +168,9 @@ const update_weather = async () => {
       var data = await request_get(option);
       await crawling(data, region);
     }
-    console.log("ENDTIME :" + moment().format("YYYY-MM-DD HH:mm:ss"));
+    console.log(
+      "ENDTIME :" + moment().add(9, "hours").format("YYYY-MM-DD HH:mm:ss")
+    );
     run = false;
   }
 };
